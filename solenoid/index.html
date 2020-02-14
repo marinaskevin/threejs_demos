@@ -32,7 +32,7 @@
 			var T_uvector = [1,0,0];
 			var N_uvector = [0,1,0];
 			var B_uvector = [];
-			var torsion = 0.1;
+			var torsion = 0.055;
 			var curvature = 1;
 			var step_size = 1;
 
@@ -63,11 +63,18 @@
 				return [v[0]+w[0],v[1]+w[1],v[2]+w[2]];
 			}
 
+			function average_vectors(v,w)
+			{
+				return multiply_vector(add_vectors(v,w),1/2);
+			}
+
 			update_B_uvector();
 
 			var start_point = [0,0,0];
 			var draw_point = start_point;
 			var end_point = [0,0,0];
+			var box_min = [0,0,0];
+			var box_max = [0,0,0];
 
 			var points_array = [];
 
@@ -81,6 +88,11 @@
 				N_uvector = normalize_vector(add_vectors(N_uvector,multiply_vector(dN,step_size)));
 				B_uvector = normalize_vector(add_vectors(B_uvector,multiply_vector(dB,step_size)));
 				draw_point = add_vectors(draw_point,multiply_vector(T_uvector,step_size));
+				for(var j=0; j<3; j++)
+				{
+					box_min[j] = box_min[j] > draw_point[j] ? draw_point[j] : box_min[j];
+					box_max[j] = box_max[j] < draw_point[j] ? draw_point[j] : box_max[j];
+				}
 			}
 
 			end_point = draw_point;
@@ -114,10 +126,11 @@
 			curveObject2.rotation.z += Math.PI;
 			// scene.add(curveObject2);
 					
-			var distance = 30;
+			var distance = 20;
 			var phi = (Math.sqrt(5)+1)/2;
 			var theta = 0;
 			var inittime = 0;
+			var object_center = average_vectors(box_min,box_max);
 
 			var render = function()
 			{
@@ -130,7 +143,7 @@
 					camera.position.x = distance * Math.cos(theta);
 					camera.position.y = distance * Math.sin(theta/Math.pow(phi,2))/2 * (Math.sin(theta)/2+1.55)/2;
 					camera.position.z = distance * Math.sin(theta);
-					camera.lookAt( new THREE.Vector3( (start_point[0]+end_point[0])/2, (start_point[1]+end_point[1])/2, (start_point[2]+end_point[2])/2 ) );
+					camera.lookAt( new THREE.Vector3(object_center[0],object_center[1],object_center[2]) );
 				renderer.render(scene, camera);
 			}
 
