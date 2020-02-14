@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<title>Solenoid</title>
+		<style>
+			body { margin: 0; background: linear-gradient(#fff,#000); color: #fff }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script src="js/threex.windowresize.js"></script>
+		<script>
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 40, window.innerWidth/window.innerHeight, 0.1, 1000 );
+				scene.add( camera );
+			var light = new THREE.PointLight( 0xffffff, 0.8 );
+				camera.add( light );
+
+			var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0x000000, 0);
+			document.body.appendChild( renderer.domElement );
+
+			THREEx.WindowResize(renderer, camera)
+
+			var geometry = new THREE.Geometry();
+			var linematerial = new THREE.LineBasicMaterial( { color: 0xffffff } );
+			var meshmaterial = new THREE.MeshPhysicalMaterial( { color: 0xff1111, side: THREE.DoubleSide, metalness: 0.4 } );
+			var numPoints = 1000;
+
+			var points_array = [];
+			var T_uvector = [1,0,0];
+			var N_uvector = [0,1,0];
+			var B_uvector = [];
+			var torsion = 0.1;
+			var curvature = 1;
+			var step_size = 1;
+
+			function update_B_uvector(t = T_uvector, n = N_uvector) {
+				B_uvector = [
+					t[1]*n[2] - t[2]*n[1],
+					t[2]*n[0] - t[0]*n[2],
+					t[0]*n[1] - t[1]*n[0]
+				]
+			}
+
+			function normalize_vector(v)
+			{
+				var l = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+				v[0] /= l;
+				v[1] /= l;
+				v[2] /= l;
+				return v;
+			}
+
+			function multiply_vector(v,f)
+			{
+				return [v[0]*f,v[1]*f,v[2]*f];
+			}
+
+			function add_vectors(v,w)
+			{
+				return [v[0]+w[0],v[1]+w[1],v[2]+w[2]];
+			}
+
+			update_B_uvector();
+
+			var start_point = [0,0,0];
+			var draw_point = start_point;
+			var end_point = [0,0,0];
+
+			var points_array = [];
+
+			for(var i=0; i<200; i++)
+			{
+				points_array.push(draw_point);
+				const dT = multiply_vector(N_uvector,curvature);
+				const dN = add_vectors(multiply_vector(T_uvector,-1 * curvature),multiply_vector(B_uvector,torsion));
+				const dB = multiply_vector(N_uvector,-1 * torsion);
+				T_uvector = normalize_vector(add_vectors(T_uvector,multiply_vector(dT,step_size)));
+				N_uvector = normalize_vector(add_vectors(N_uvector,multiply_vector(dN,step_size)));
+				B_uvector = normalize_vector(add_vectors(B_uvector,multiply_vector(dB,step_size)));
+				draw_point = add_vectors(draw_point,multiply_vector(T_uvector,step_size));
+			}
+
+			end_point = draw_point;
+
+			var vector3_array = [];
+
+			for(var i=0; i < points_array.length; i++)
+			{
+				const new_vector3 = new THREE.Vector3(points_array[i][0],points_array[i][1],points_array[i][2]);
+				vector3_array.push(new_vector3);
+			}
+
+			var curve = new THREE.CatmullRomCurve3(vector3_array);
+
+			curve.closed = false;
+			var curvePoints = curve.getPoints(numPoints);
+
+			var i,j,k = 0;
+
+			for(var i = 0; i < curvePoints.length; i++){
+				geometry.vertices.push(curvePoints[i]);  
+			}
+			
+			var wirebundle = new THREE.TubeGeometry( curve, 1000, 0.1875, 8, false );
+
+			//var curveObject1 = new THREE.Line(wirebundle, meshmaterial);
+			var curveObject1 = new THREE.Mesh(wirebundle, meshmaterial);
+			scene.add(curveObject1);
+			
+			var curveObject2 = curveObject1.clone();
+			curveObject2.rotation.z += Math.PI;
+			// scene.add(curveObject2);
+					
+			var distance = 30;
+			var phi = (Math.sqrt(5)+1)/2;
+			var theta = 0;
+			var inittime = 0;
+
+			var render = function()
+			{
+				requestAnimationFrame( render );
+					if(inittime==0)
+					{
+						inittime=Date.now();
+					}
+					theta = (Date.now()-inittime)*0.0002;
+					camera.position.x = distance * Math.cos(theta);
+					camera.position.y = distance * Math.sin(theta/Math.pow(phi,2))/2 * (Math.sin(theta)/2+1.55)/2;
+					camera.position.z = distance * Math.sin(theta);
+					camera.lookAt( new THREE.Vector3( (start_point[0]+end_point[0])/2, (start_point[1]+end_point[1])/2, (start_point[2]+end_point[2])/2 ) );
+				renderer.render(scene, camera);
+			}
+
+			render();
+		</script>
+	</body>
+</html>
