@@ -27,23 +27,21 @@
 			THREEx.WindowResize(renderer, camera);
 
 			var geometry = new THREE.TorusGeometry( 2, 0.3, 16, 100 );
-			var meshmaterial = new THREE.MeshPhysicalMaterial( { color: 0xf4ab16, side: THREE.DoubleSide, metalness: 0.6 } );
+			var meshmaterial = new THREE.MeshPhysicalMaterial( { color: 0xf4ab16, side: THREE.DoubleSide, metalness: 0.3 } );
 			var torii = [];
 			var torii_set_size = 36;
 
-            for(var i=0; i<torii_set_size; i++)
-            {
-            	var torus = new THREE.Mesh(geometry, meshmaterial);
-            	var angle = 2 * Math.PI * i / torii_set_size;
-            	console.log(angle);
+			for(var i=0; i<torii_set_size; i++)
+			{
+				var torus = new THREE.Mesh(geometry, meshmaterial);
+				var angle = 2 * Math.PI * i / torii_set_size;
 				scene.add(torus);
-            	torus.position.z = Math.cos(angle)*30;
-            	torus.position.y = Math.sin(angle)*30;
-            	torus.rotation.y = angle;
+				torus.position.z = Math.cos(angle)*30;
+				torus.position.y = Math.sin(angle)*30;
+				torus.rotation.y = angle;
 				torii.push(torus);
-				console.log(torii);
-            }
-					
+			}
+
 			var object_center = [0,0,0];
 			var distance = 200;
 			var phi = (Math.sqrt(5)+1)/2;
