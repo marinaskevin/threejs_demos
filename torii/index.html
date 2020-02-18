@@ -3,8 +3,20 @@
 		<meta charset="utf-8">
 		<title>Torii</title>
 		<style>
-			body { margin: 0; background: linear-gradient(#fff,#000); color: #fff }
-			canvas { width: 100%; height: 100% }
+			body { margin: 0; }
+			canvas { position: absolute; width: 100%; height: 100% }
+			.title {
+				position: absolute;
+				display: table-cell;
+				text-align: center;
+				left: 0px;
+				right: 0px;
+				width: 100%;
+				height: 100%;
+				z-index: 1;
+				font-size: 2rem;
+				font-style: italic;
+			}
 		</style>
 	</head>
 	<body>
@@ -12,12 +24,19 @@
 		<script src="js/threex.windowresize.js"></script>
 		<script>
 			var scene = new THREE.Scene();
-			var camera = new THREE.PerspectiveCamera( 20, window.innerWidth/window.innerHeight, 0.1, 1000 );
+			var camera = new THREE.PerspectiveCamera( 40, window.innerWidth/window.innerHeight, 0.1, 10000 );
 				scene.add( camera );
 			var light = new THREE.PointLight( 0xffffff, 0.8 );
 				camera.add( light );
 			var ambient_light = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient_light );
+			var floor = new THREE.Mesh( new THREE.CircleBufferGeometry( 50, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: true } ) );
+				floor.position.x = 0;
+				floor.position.y = -35;
+				floor.position.z = 0;
+				floor.rotation.x = - Math.PI / 2;
+				floor.receiveShadow = true;
+				scene.add( floor );
 
 			var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 			renderer.setSize( window.innerWidth, window.innerHeight );
@@ -43,10 +62,11 @@
 			}
 
 			var object_center = [0,0,0];
-			var distance = 200;
+			var distance = 150;
 			var phi = (Math.sqrt(5)+1)/2;
 			var theta = 0;
 			var inittime = 0;
+			var rotation_speed = 0.0002;
 
 			var render = function()
 			{
@@ -55,9 +75,9 @@
 					{
 						inittime=Date.now();
 					}
-					theta = (Date.now()-inittime)*0.0002;
+					theta = (Date.now()-inittime)*rotation_speed;
 					camera.position.x = distance * Math.cos(theta);
-					camera.position.y = 50;
+					camera.position.y = 30;
 					camera.position.z = distance * Math.sin(theta);
 					for(var i=0; i<torii.length; i++)
 					{
@@ -69,5 +89,8 @@
 
 			render();
 		</script>
+		<div class="title">
+			Torii
+		</div>
 	</body>
 </html>
