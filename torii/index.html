@@ -1,21 +1,26 @@
-<html>
+<html lang="en-US">
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Torii</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 		<style>
 			body { margin: 0; }
 			canvas { position: absolute; width: 100%; height: 100% }
-			.title {
+			.banner {
 				position: absolute;
 				display: table-cell;
 				text-align: center;
 				left: 0px;
 				right: 0px;
 				width: 100%;
-				height: 100%;
 				z-index: 1;
 				font-size: 2rem;
 				font-style: italic;
+			}
+			.bottom {
+				bottom: 0px;
 			}
 		</style>
 	</head>
@@ -67,6 +72,7 @@
 			var theta = 0;
 			var inittime = 0;
 			var rotation_speed = 0.0002;
+			var hide_torii = -1;
 
 			var render = function()
 			{
@@ -88,9 +94,20 @@
 			}
 
 			render();
+
+			$(document).ready(function () {
+				$("#torii_selector").change(function() {
+					torii[$(this).val()].scale.x *= 2;
+					torii[$(this).val()].scale.y *= 2;
+					torii[$(this).val()].scale.z *= 2;
+				});
+			});
 		</script>
-		<div class="title">
+		<div class="banner">
 			Torii
+		</div>
+		<div class="banner bottom">
+			<input id="torii_selector" type="number" value="-1" min="0" max="35"/>
 		</div>
 	</body>
 </html>
