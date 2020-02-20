@@ -29,6 +29,16 @@
 		<script src="js/threex.windowresize.js"></script>
 		<script>
 			var scene = new THREE.Scene();
+	        var texture = THREE.ImageUtils.loadTexture( 'img/scene_background.jpg' );
+	        var backgroundMesh = new THREE.Mesh(
+	            new THREE.PlaneGeometry(50, 50, 0),
+	            new THREE.MeshBasicMaterial({
+	                map: texture
+	            }));
+		        backgroundMesh.material.depthTest = false;
+		        backgroundMesh.material.depthWrite = false;
+		        backgroundMesh.position.z = -20;
+		        scene.add(backgroundMesh);
 			var camera = new THREE.PerspectiveCamera( 40, window.innerWidth/window.innerHeight, 0.1, 10000 );
 				scene.add( camera );
 			var light = new THREE.PointLight( 0xffffff, 0.8 );
@@ -85,6 +95,7 @@
 					camera.position.x = distance * Math.cos(theta);
 					camera.position.y = 30;
 					camera.position.z = distance * Math.sin(theta);
+
 					for(var i=0; i<torii.length; i++)
 					{
 						torii[i].rotation.y += 0.04;
