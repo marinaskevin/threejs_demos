@@ -1,0 +1,110 @@
+<html lang="en-US">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Spheres</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+		<style>
+			body { margin: 0; }
+			canvas { position: absolute; width: 100%; height: 100% }
+			.banner {
+				position: absolute;
+				display: table-cell;
+				text-align: center;
+				left: 0px;
+				right: 0px;
+				width: 100%;
+				z-index: 1;
+				font-size: 2rem;
+				font-style: italic;
+			}
+			.bottom {
+				bottom: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script src="js/threex.windowresize.js"></script>
+		<script>
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera( 40, window.innerWidth/window.innerHeight, 0.1, 10000 );
+				scene.add( camera );
+			var light = new THREE.PointLight( 0xffffff, 0.8 );
+				camera.add( light );
+			var ambient_light = new THREE.AmbientLight( 0xffffff );
+				scene.add( ambient_light );
+			var floor = new THREE.Mesh( new THREE.CircleBufferGeometry( 50, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: true } ) );
+				floor.position.x = 0;
+				floor.position.y = -35;
+				floor.position.z = 0;
+				floor.rotation.x = - Math.PI / 2;
+				floor.receiveShadow = true;
+				scene.add( floor );
+
+			var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setClearColor( 0x000000, 0);
+			document.body.appendChild( renderer.domElement );
+
+			THREEx.WindowResize(renderer, camera);
+
+			var geometry = new THREE.SphereGeometry( 2, 30, 30 );
+			var meshmaterial = new THREE.MeshPhysicalMaterial( { color: 0xf4ab16, side: THREE.DoubleSide, metalness: 0.3 } );
+			var spheres = [];
+			var spheres_set_size = 36;
+
+			for(var i=0; i<spheres_set_size; i++)
+			{
+				var sphere = new THREE.Mesh(geometry, meshmaterial);
+				var angle = 2 * Math.PI * i / spheres_set_size;
+				scene.add(sphere);
+				sphere.position.z = Math.cos(angle)*30;
+				sphere.position.y = Math.sin(angle)*30;
+				sphere.rotation.y = angle;
+				spheres.push(sphere);
+			}
+
+			var object_center = [0,0,0];
+			var distance = 150;
+			var phi = (Math.sqrt(5)+1)/2;
+			var theta = 0;
+			var inittime = 0;
+			var rotation_speed = 0.0002;
+			var hide_spheres = -1;
+
+			var render = function()
+			{
+				requestAnimationFrame( render );
+					if(inittime==0)
+					{
+						inittime=Date.now();
+					}
+					theta = (Date.now()-inittime)*rotation_speed;
+					camera.position.x = distance * Math.cos(theta);
+					camera.position.y = 30;
+					camera.position.z = distance * Math.sin(theta);
+
+					camera.lookAt( new THREE.Vector3(object_center[0],object_center[1],object_center[2]) );
+				renderer.render(scene, camera);
+			}
+
+			render();
+
+			$(document).ready(function () {
+				$("#spheres_selector").change(function() {
+					spheres[$(this).val()].scale.x *= 2;
+					spheres[$(this).val()].scale.y *= 2;
+					spheres[$(this).val()].scale.z *= 2;
+				});
+			});
+		</script>
+		<div class="banner">
+			Spheres
+		</div>
+		<div class="banner bottom">
+			<input id="spheres_selector" type="number" value="-1" min="0" max="35"/>
+		</div>
+	</body>
+</html>
