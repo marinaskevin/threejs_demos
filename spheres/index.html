@@ -43,6 +43,30 @@
 				floor.receiveShadow = true;
 				scene.add( floor );
 
+			var text_geometry, title, title_container;
+
+			var loader = new THREE.FontLoader();
+			loader.load( 'fonts/Magneto_Bold.json', function ( font ) {
+				text_geometry = new THREE.TextGeometry( 'Spheres', {
+					font: font,
+					size: 7,
+					height: 0,
+					curveSegments: 30,
+					bevelEnabled: true,
+					bevelThickness: 0,
+					bevelSize: 0,
+					bevelOffset: 0,
+					bevelSegments: 10
+				} );
+				title = new THREE.Mesh( text_geometry , new THREE.MeshPhongMaterial( { color: 0xffff00, depthWrite: true } ) );
+				scene.add(title);
+				title.rotation.y = Math.PI/2;
+				title_container = new THREE.Box3().setFromObject( title );
+				title.position.x -= (title_container.max.x+title_container.min.x)/2;
+				title.position.y -= (title_container.max.y+title_container.min.y)/2;
+				title.position.z -= (title_container.max.z+title_container.min.z)/2;
+			} );
+
 			var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			renderer.setClearColor( 0x000000, 0);
@@ -77,16 +101,21 @@
 			var render = function()
 			{
 				requestAnimationFrame( render );
-					if(inittime==0)
-					{
-						inittime=Date.now();
-					}
-					theta = (Date.now()-inittime)*rotation_speed;
-					camera.position.x = distance * Math.cos(theta);
-					camera.position.y = 30;
-					camera.position.z = distance * Math.sin(theta);
-
-					camera.lookAt( new THREE.Vector3(object_center[0],object_center[1],object_center[2]) );
+				if(inittime==0)
+				{
+					inittime=Date.now();
+				}
+				if(title)
+				{
+					title.material.color.r = (Math.sin(theta*7)+1)/2;
+					title.material.color.g = (Math.sin(theta*7+2/3 * Math.PI)+1)/2;
+					title.material.color.b = (Math.sin(theta*7+4/3 * Math.PI)+1)/2;
+				}
+				theta = (Date.now()-inittime)*rotation_speed;
+				camera.position.x = distance * Math.cos(theta);
+				camera.position.y = 30;
+				camera.position.z = distance * Math.sin(theta);
+				camera.lookAt( new THREE.Vector3(object_center[0],object_center[1],object_center[2]) );
 				renderer.render(scene, camera);
 			}
 
@@ -100,9 +129,6 @@
 				});
 			});
 		</script>
-		<div class="banner">
-			Spheres
-		</div>
 		<div class="banner bottom">
 			<input id="spheres_selector" type="number" value="-1" min="0" max="35"/>
 		</div>
