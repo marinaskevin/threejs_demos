@@ -131,9 +131,19 @@
 					spheres[$(this).val()].scale.z *= 2;
 				});
 			});
+
+			function reset_spheres() {
+				for(var i=0; i<spheres_set_size; i++)
+				{
+					var angle = 2 * Math.PI * i / spheres_set_size;
+					spheres[i].scale.x = 1;
+					spheres[i].scale.y = 1;
+					spheres[i].scale.z = 1;
+				}
+			}
 		</script>
 		<div class="banner bottom">
-			<input id="spheres_selector" type="number" value="-1" min="0" max="35"/>
+			<input id="spheres_selector" type="number" value="-1" min="0" max="35"/> <button class="btn btn-dark" onclick="reset_spheres()">Reset Spheres</button>
 		</div>
 	</body>
 </html>
