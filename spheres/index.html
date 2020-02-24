@@ -94,7 +94,9 @@
 			var distance = 150;
 			var phi = (Math.sqrt(5)+1)/2;
 			var theta = 0;
+			var cam_theta = 0;
 			var inittime = 0;
+			var prevtime = 0;
 			var rotation_speed = 0.0002;
 			var hide_spheres = -1;
 
@@ -105,6 +107,10 @@
 				{
 					inittime=Date.now();
 				}
+				if(prevtime==0)
+				{
+					prevtime=Date.now();
+				}
 				if(title)
 				{
 					title.material.color.r = (Math.sin(theta*7)+1)/2;
@@ -114,10 +120,12 @@
 					new_background_color.offsetHSL( 0, 0, -0.2 );
 					$("body").css("background-color","#"+new_background_color.getHexString());
 				}
-				theta = (Date.now()-inittime)*rotation_speed;
-				camera.position.x = distance * Math.cos(theta);
+				theta = (Date.now()-inittime)*0.0002;
+				cam_theta += (Date.now()-prevtime)*rotation_speed;
+				prevtime = Date.now();
+				camera.position.x = distance * Math.cos(cam_theta);
 				camera.position.y = 30;
-				camera.position.z = distance * Math.sin(theta);
+				camera.position.z = distance * Math.sin(cam_theta);
 				camera.lookAt( new THREE.Vector3(object_center[0],object_center[1],object_center[2]) );
 				renderer.render(scene, camera);
 			}
@@ -140,7 +148,24 @@
 					spheres[i].scale.y = 1;
 					spheres[i].scale.z = 1;
 				}
+				rotation_speed = 0.0002;
 			}
+
+			$(document).keydown(function(e){
+				console.log(e);
+				console.log(e.which);
+				switch(e.which)
+				{
+					// left arrow
+					case 37:
+						rotation_speed -= 0.0002;
+						break;
+					// right arrow
+					case 39:
+						rotation_speed += 0.0002;
+						break;
+				}
+			});
 		</script>
 		<div class="banner bottom">
 			<input id="spheres_selector" type="number" value="-1" min="0" max="35"/> <button class="btn btn-dark" onclick="reset_spheres()">Reset Spheres</button>
