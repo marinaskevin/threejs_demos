@@ -1,10 +1,14 @@
-# three.js resources
+# three.js official resources
 
 [three.js](https://threejs.org/)
 
 [three.js examples](https://threejs.org/examples/)
 
 [three.js docs](https://threejs.org/docs/)
+
+# More three.js resources
+
+[three.js examples](https://stemkoski.github.io/Three.js/) by [Lee Stemkoski](https://github.com/stemkoski)
 
 # three.js examples by Kevin Marinas
 
