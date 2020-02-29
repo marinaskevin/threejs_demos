@@ -27,6 +27,22 @@
 	<body>
 		<script src="js/three.js"></script>
 		<script src="js/threex.windowresize.js"></script>
+		<script id="vertexShader" type="x-shader/x-vertex">
+			uniform float time;
+			uniform vec2 resolution;
+			void main()	{
+					gl_Position = vec4( position, 1.0 );
+			}
+		</script>
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			uniform float time;
+			uniform vec2 resolution;
+			void main()	{
+					float x = mod(time + gl_FragCoord.x, 20.) < 10. ? 1. : 0.;
+					float y = mod(time + gl_FragCoord.y, 20.) < 10. ? 1. : 0.;
+					gl_FragColor = vec4(vec3(min(x, y)), 1.);
+			}
+		</script>
 		<script>
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 40, window.innerWidth/window.innerHeight, 0.1, 10000 );
@@ -35,6 +51,7 @@
 				camera.add( light );
 			var ambient_light = new THREE.AmbientLight( 0xffffff );
 				scene.add( ambient_light );
+
 			var floor = new THREE.Mesh( new THREE.CircleBufferGeometry( 50, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: true } ) );
 				floor.position.x = 0;
 				floor.position.y = -35;
@@ -74,8 +91,19 @@
 
 			THREEx.WindowResize(renderer, camera);
 
+
+			var uniforms = {
+				time: { type: "f", value: 1.0 },
+				resolution: { type: "v2", value: new THREE.Vector2() }
+			};
+
 			var geometry = new THREE.SphereGeometry( 2, 30, 30 );
-			var meshmaterial = new THREE.MeshPhysicalMaterial( { color: 0xf4ab16, side: THREE.DoubleSide, metalness: 0.3 } );
+			var meshmaterial = new THREE.ShaderMaterial({
+				uniforms: uniforms,
+				vertexShader: document.getElementById('vertexShader').textContent,
+				fragmentShader: document.getElementById('fragmentShader').textContent
+			});
+
 			var spheres = [];
 			var spheres_set_size = 36;
 
