@@ -60,6 +60,30 @@
 			}
 		</script>
 		<script>
+			const bgScene = new THREE.Scene();
+			let bgMesh;
+			{
+				const loader = new THREE.TextureLoader();
+				const texture = loader.load(
+				'img/8hw0clw-360-panorama-miami.jpg',
+				);
+				texture.magFilter = THREE.LinearFilter;
+				texture.minFilter = THREE.LinearFilter;
+
+				const shader = THREE.ShaderLib.equirect;
+				const material = new THREE.ShaderMaterial({
+				fragmentShader: shader.fragmentShader,
+				vertexShader: shader.vertexShader,
+				uniforms: shader.uniforms,
+				depthWrite: false,
+				side: THREE.BackSide,
+				});
+				material.uniforms.tEquirect.value = texture;
+				const plane = new THREE.BoxBufferGeometry(600, 600, 600);
+				bgMesh = new THREE.Mesh(plane, material);
+				bgScene.add(bgMesh);
+			}
+
 			var scene = new THREE.Scene();
 			var camera = new THREE.PerspectiveCamera( 40, window.innerWidth/window.innerHeight, 0.1, 10000 );
 				scene.add( camera );
@@ -102,7 +126,8 @@
 
 			var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.setClearColor( 0x000000, 0);
+			renderer.autoClearColor = false;
+			// renderer.setClearColor( 0x000000, 0);
 			document.body.appendChild( renderer.domElement );
 
 			THREEx.WindowResize(renderer, camera);
@@ -145,6 +170,7 @@
 			var rotation_speed = 0.0002;
 			var hide_spheres = -1;
 
+			bgMesh.position.copy(camera.position);
 
 			//attribute
 			var vertexDisplacement = new Float32Array(geometry.attributes.position.count);
@@ -187,9 +213,9 @@
 					title.material.color.r = (Math.sin(theta*7)+1)/2;
 					title.material.color.g = (Math.sin(theta*7+2/3 * Math.PI)+1)/2;
 					title.material.color.b = (Math.sin(theta*7+4/3 * Math.PI)+1)/2;
-					var new_background_color = title.material.color.clone();
-					new_background_color.offsetHSL( 0, 0, -0.2 );
-					$("body").css("background-color","#"+new_background_color.getHexString());
+					// var new_background_color = title.material.color.clone();
+					// new_background_color.offsetHSL( 0, 0, -0.2 );
+					// $("body").css("background-color","#"+new_background_color.getHexString());
 				}
 
 				theta = (Date.now()-inittime)*0.0002;
@@ -199,6 +225,8 @@
 				camera.position.y = 30;
 				camera.position.z = distance * Math.sin(cam_theta);
 				camera.lookAt( new THREE.Vector3(object_center[0],object_center[1],object_center[2]) );
+
+				renderer.render(bgScene, camera);
 				renderer.render(scene, camera);
 			}
 
