@@ -10,6 +10,8 @@
 
 [three.js examples](https://stemkoski.github.io/Three.js/) by [Lee Stemkoski](https://github.com/stemkoski)
 
+[three.js fundamentals](https://threejsfundamentals.org/)
+
 # three.js examples by Kevin Marinas
 
 [S.H.O. Coil](http://sho.wiki/3d/)
