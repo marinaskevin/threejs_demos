@@ -12,6 +12,8 @@
 
 [three.js fundamentals](https://threejsfundamentals.org/)
 
+[three.js reddit](https://www.reddit.com/r/threejs/)
+
 # three.js examples by Kevin Marinas
 
 [S.H.O. Coil](http://sho.wiki/3d/)
