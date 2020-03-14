@@ -6,6 +6,8 @@
 
 [three.js docs](https://threejs.org/docs/)
 
+[three.js github](https://github.com/mrdoob/three.js/)
+
 # More three.js resources
 
 [three.js examples](https://stemkoski.github.io/Three.js/) by [Lee Stemkoski](https://github.com/stemkoski)
