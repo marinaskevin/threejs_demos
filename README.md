@@ -8,6 +8,8 @@
 
 [three.js github](https://github.com/mrdoob/three.js/)
 
+[three.js editor](https://threejs.org/editor/)
+
 # More three.js resources
 
 [three.js examples](https://stemkoski.github.io/Three.js/) by [Lee Stemkoski](https://github.com/stemkoski)
